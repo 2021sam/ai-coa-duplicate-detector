@@ -30,7 +30,7 @@ embeddings = model.encode(df["combined"].tolist(), convert_to_tensor=False)
 similarity_matrix = cosine_similarity(embeddings)
 
 # Detect duplicates with a threshold
-threshold = 0.85
+threshold = 0.95
 duplicates = []
 for i in range(len(df)):
     for j in range(i + 1, len(df)):
@@ -41,10 +41,13 @@ for i in range(len(df)):
                 round(similarity_matrix[i][j], 3)
             ))
 
-# Output detected duplicates
-if duplicates:
-    print("⚠️ Potential Duplicate Accounts Found:\n")
-    for name1, name2, score in duplicates:
+# Sort duplicates by similarity score (descending)
+duplicates_sorted = sorted(duplicates, key=lambda x: x[2], reverse=True)
+
+# Output sorted duplicates
+if duplicates_sorted:
+    print("⚠️ Potential Duplicate Accounts Found (Sorted by Similarity):\n")
+    for name1, name2, score in duplicates_sorted:
         print(f"- {name1} <--> {name2} | Similarity: {score}")
 else:
     print("✅ No duplicate accounts detected above the threshold.")
